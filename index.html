@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>To Do List</title>
+  </head>
+  <body>
+    <header>
+      <div class="title">
+        <h1>To Do List</h1>
+      </div>
+    </header>
+
+    <section>
+      <form >
+        <input id="add-items" type="text" placeholder="Add new task..." maxlength="90"/>
+          <button onclick="addItem()" id="add" type="submit">
+            <i class="sign fa fa-plus"></i>
+          </button>
+          <button onclick="addItem()" id="remove" type="submit">
+            <i class="sign fas fa-minus"></i>
+          </button>
+        </div>
+      </form>
+      <ul id="items"></ul>
+    </section>
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+    <script src="script.js"></script>
+  </body>
+</html>
