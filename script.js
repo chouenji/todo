@@ -50,7 +50,6 @@ function editContent(
   item.addEventListener("keypress", (e) => {
     if (e.keyCode === 13 || e.which === 13) {
       editContent(item, false, "rgb(39, 59, 77)", "fa-paper-plane", "fa-edit");
-      item.contentEditable = true;
     }
   });
   item.setAttribute("contentEditable", isContentEditable);
