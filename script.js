@@ -1,18 +1,30 @@
-const input = $("#add-items");
+const add = $("#add-items");
+const remove = $("#remove");
 const ul = $("#items");
 
 function addItem() {
   event.preventDefault();
 
-  let value = input.val();
+  let value = add.val();
   if (value !== "") {
     const li = $(`<li class="item">
-    <span class="text" onkeypress="return maxCharacters(this)">${value}</span>
+    <span class="text" onkeypress="maxCharacters(this)">${value}</span>
     <i onclick="editItem(this.parentElement.firstElementChild)" class="icon edit fas fa-edit"></i>
     <i onclick="removeItem(this.parentElement)" class="icon trash fas fa-trash-alt"></i>
     </li>`);
     ul.append(li);
     saveLocalStorage();
+    add.val("");
+  }
+}
+
+function removeAllItems() {
+  event.preventDefault();
+  let input = confirm("Are you sure you want to delete all items?");
+
+  if (input === true) {
+    ul.empty();
+    localStorage.clear();
   }
 }
 
@@ -44,7 +56,7 @@ function editContent(
 }
 
 function maxCharacters(item) {
-  return item.innerText.length <= 90;
+  return item.innerText.length <= 30;
 }
 
 function removeItem(item) {
@@ -74,13 +86,17 @@ function removeLocalStorage(item) {
 function saveList() {
   for (let i = 0; i < localStorage.length; i++) {
     if (localStorage.getItem(i) !== "removed") {
-      const li = $(`<li class="item">${localStorage.getItem(i)}
+      const li = $(`<li class="item">
+                    <span class="text" onkeypress="maxCharacters(this)">
+                    ${localStorage.getItem(i)}</span>
                     <i onclick="editItem(this.parentNode)" class="icon edit fas fa-edit"></i>
                     <i onclick="removeItem(this.parentNode)" class="icon trash fas fa-trash-alt"></i>
                     </li>`);
       ul.append(li);
     }
   }
+
+  clearStorage();
 }
 
 function clearStorage() {
@@ -98,4 +114,3 @@ function clearStorage() {
 }
 
 saveList();
-clearStorage();
