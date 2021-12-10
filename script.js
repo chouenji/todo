@@ -8,7 +8,7 @@ function addItem() {
   let value = add.val();
   if (value !== "") {
     const li = $(`<li class="item">
-    <span class="text" onkeypress="maxCharacters(this)">${value}</span>
+    <span class="text" onkeypress="maxChar(this)">${value}</span>
     <i onclick="editItem(this.parentElement.firstElementChild)" class="icon edit fas fa-edit"></i>
     <i onclick="removeItem(this.parentElement)" class="icon trash fas fa-trash-alt"></i>
     </li>`);
@@ -16,6 +16,10 @@ function addItem() {
     saveLocalStorage();
     add.val("");
   }
+}
+
+function maxChar(item) {
+  return item.textContent.length <= 30;
 }
 
 function removeAllItems() {
@@ -46,17 +50,28 @@ function editContent(
   item.addEventListener("keypress", (e) => {
     if (e.keyCode === 13 || e.which === 13) {
       editContent(item, false, "rgb(39, 59, 77)", "fa-paper-plane", "fa-edit");
+      item.contentEditable = true;
     }
   });
-
   item.setAttribute("contentEditable", isContentEditable);
-  item.style.backgroundColor = backgroundColor;
+  item.parentElement.style.backgroundColor = backgroundColor;
   item.parentElement.children[1].classList.remove(addClass);
   item.parentElement.children[1].classList.add(removeClass);
+  item.focus();
+  saveEditItemLocalStorage(item);
 }
 
-function maxCharacters(item) {
-  return item.innerText.length <= 30;
+function saveEditItems(item) {
+  const li = ul.children("li");
+  let index = 0;
+  for (let i = 0; i < li.length; i++) {
+    if (item.textContent === li[i].firstElementChild) {
+      index = i;
+      break;
+    }
+  }
+
+  localStorage.setItem(index, item.textContent);
 }
 
 function removeItem(item) {
@@ -75,9 +90,17 @@ function saveLocalStorage() {
   });
 }
 
+function saveEditItemLocalStorage(item) {
+  const li = ul.children("li");
+  let i = 0;
+  li.each(() => {
+    localStorage.setItem(i, li[i++].textContent.trim());
+  });
+}
+
 function removeLocalStorage(item) {
   for (let i = 0; i < localStorage.length; i++) {
-    if (item.textContent.trim() == localStorage.getItem(i)) {
+    if (item.textContent.trim() === localStorage.getItem(i)) {
       localStorage.setItem(i, "removed");
     }
   }
@@ -87,9 +110,9 @@ function saveList() {
   for (let i = 0; i < localStorage.length; i++) {
     if (localStorage.getItem(i) !== "removed") {
       const li = $(`<li class="item">
-                    <span class="text" onkeypress="maxCharacters(this)">
+                    <span class="text" onkeypress="maxChar(this)">
                     ${localStorage.getItem(i)}</span>
-                    <i onclick="editItem(this.parentNode)" class="icon edit fas fa-edit"></i>
+                    <i onclick="editItem(this.parentElement.firstElementChild)" class="icon edit fas fa-edit"></i>
                     <i onclick="removeItem(this.parentNode)" class="icon trash fas fa-trash-alt"></i>
                     </li>`);
       ul.append(li);
