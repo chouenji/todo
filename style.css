@@ -33,6 +33,7 @@ form {
 
 #add-items {
   flex: 1;
+  width: 30%;
   height: 3rem;
   font-size: 1.2rem;
   font-weight: bold;
@@ -109,4 +110,10 @@ section {
 
 .trash {
   right: 1rem;
+}
+
+@media (max-width: 400px) {
+  .title h1 {
+    font-size: 12vw;
+  }
 }
