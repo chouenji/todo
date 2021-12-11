@@ -1,14 +1,13 @@
-const add = $("#add-items");
-const remove = $("#remove");
 const ul = $("#items");
 
 function addItem() {
   event.preventDefault();
 
+  const add = $("#add-items");
   let value = add.val();
   if (value !== "") {
     const li = $(`<li class="item">
-    <span class="text" onkeypress="maxChar(this)">${value}</span>
+    <span class="text" onkeypress="return this.textContent.length <= 30">${value}</span>
     <i onclick="editItem(this.parentElement.firstElementChild)" class="icon edit fas fa-edit"></i>
     <i onclick="removeItem(this.parentElement)" class="icon trash fas fa-trash-alt"></i>
     </li>`);
@@ -18,18 +17,69 @@ function addItem() {
   }
 }
 
-function maxChar(item) {
-  return item.textContent.length <= 30;
+function deleteItems() {
+  event.preventDefault();
+  swal({
+    title:
+      "You will not be able to undo once you choose to delete selected items or everything.",
+    buttons: {
+      option1: {
+        text: "Delete selected items",
+        value: "selectedItems",
+      },
+      option2: {
+        text: "Delete everything",
+        value: "deleteEverything",
+      },
+      cancel: true,
+    },
+    icon: "warning",
+    dangerMode: true,
+  }).then((value) => {
+    if (value === "selectedItems") {
+      const li = ul.children("li");
+      let storage = [];
+
+      let i = 0;
+      let j = 0;
+      li.each(() => {
+        if (li[i].lastElementChild.classList.contains("fa-undo")) {
+          storage[j++] = li[i].textContent.trim();
+        }
+        i++;
+      });
+
+      removeLocalStorage(storage);
+      location.reload();
+    } else if (value === "deleteEverything") {
+      localStorage.clear();
+      ul.empty();
+    } else {
+      swal("No items were removed!");
+    }
+  });
 }
 
-function removeAllItems() {
-  event.preventDefault();
-  let input = confirm("Are you sure you want to delete all items?");
-
-  if (input === true) {
-    ul.empty();
-    localStorage.clear();
+function removeItem(item) {
+  console.log(item.children[2].classList.contains("fa-trash-alt"));
+  if (item.children[2].classList.contains("fa-trash-alt")) {
+    checkRemoveIcon(
+      item,
+      "line-through",
+      "rgb(21, 30, 37)",
+      "fa-trash-alt",
+      "fa-undo"
+    );
+  } else {
+    checkRemoveIcon(item, "none", "rgb(39, 59, 77)", "fa-undo", "fa-trash-alt");
   }
+}
+
+function checkRemoveIcon(item, textDecoration, backgroundColor, remove, add) {
+  item.firstElementChild.style.textDecoration = textDecoration;
+  item.style.backgroundColor = backgroundColor;
+  item.children[2].classList.remove(remove);
+  item.children[2].classList.add(add);
 }
 
 function editItem(item) {
@@ -57,7 +107,7 @@ function editContent(
   item.parentElement.children[1].classList.remove(addClass);
   item.parentElement.children[1].classList.add(removeClass);
   item.focus();
-  saveEditItemLocalStorage(item);
+  saveLocalStorage();
 }
 
 function saveEditItems(item) {
@@ -73,14 +123,6 @@ function saveEditItems(item) {
   localStorage.setItem(index, item.textContent);
 }
 
-function removeItem(item) {
-  item.firstElementChild.style.textDecoration = "line-through";
-  item.style.pointerEvents = "none";
-  item.style.backgroundColor = "rgb(21, 32, 41)";
-
-  removeLocalStorage(item);
-}
-
 function saveLocalStorage() {
   const li = ul.children("li");
   let i = 0;
@@ -89,18 +131,12 @@ function saveLocalStorage() {
   });
 }
 
-function saveEditItemLocalStorage(item) {
-  const li = ul.children("li");
-  let i = 0;
-  li.each(() => {
-    localStorage.setItem(i, li[i++].textContent.trim());
-  });
-}
-
 function removeLocalStorage(item) {
-  for (let i = 0; i < localStorage.length; i++) {
-    if (item.textContent.trim() === localStorage.getItem(i)) {
-      localStorage.setItem(i, "removed");
+  for (let i = 0; i < item.length; i++) {
+    for (let j = 0; j < localStorage.length; j++) {
+      if (item[i] === localStorage.getItem(j)) {
+        localStorage.setItem(j, "removed");
+      }
     }
   }
 }
@@ -109,7 +145,7 @@ function saveList() {
   for (let i = 0; i < localStorage.length; i++) {
     if (localStorage.getItem(i) !== "removed") {
       const li = $(`<li class="item">
-                    <span class="text" onkeypress="maxChar(this)">
+                    <span class="text" onkeypress="return this.textContent.length <= 30">
                     ${localStorage.getItem(i)}</span>
                     <i onclick="editItem(this.parentElement.firstElementChild)" class="icon edit fas fa-edit"></i>
                     <i onclick="removeItem(this.parentNode)" class="icon trash fas fa-trash-alt"></i>
