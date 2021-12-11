@@ -135,6 +135,7 @@ function removeLocalStorage(item) {
     for (let j = 0; j < localStorage.length; j++) {
       if (item[i] === localStorage.getItem(j)) {
         localStorage.setItem(j, "removed");
+        break;
       }
     }
   }
