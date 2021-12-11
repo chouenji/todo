@@ -61,7 +61,6 @@ function deleteItems() {
 }
 
 function removeItem(item) {
-  console.log(item.children[2].classList.contains("fa-trash-alt"));
   if (item.children[2].classList.contains("fa-trash-alt")) {
     checkRemoveIcon(
       item,
